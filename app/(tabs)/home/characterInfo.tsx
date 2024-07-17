@@ -1,29 +1,70 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import {
   StyleSheet,
-  Platform,
   Text,
   View,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 
-import { personaje } from '@/utils/fakeData';
 import { Image } from 'expo-image';
-import { Link } from 'expo-router';
+import {
+  Link,
+  useLocalSearchParams,
+  useNavigation,
+  usePathname,
+} from 'expo-router';
+import { useEffect, useState } from 'react';
+import { getEpisodieInfo } from '@/service/api';
+import { getfavorite, removefavorite, setfavorite } from '@/utils/asyncStorage';
 
+interface character {
+  id: number;
+  name: string;
+  status: string;
+  species: string;
+  type: string;
+  gender: string;
+  image: string;
+  episode: Array<string>;
+}
+interface episodie {
+  id: number;
+  name: string;
+  air_date: string;
+  episode: string;
+}
 export default function characterInfo() {
-  const {
-    episode,
-    gender,
-    id,
-    image,
-    name,
-    species,
-    status,
-    type,
-    episodeDevolver,
-  } = personaje;
+  const navigation = useNavigation();
+  const [episodeShow, setEpisodeShow] = useState<Array<episodie>>([]);
+  const [login, setLogin] = useState(true);
+  const [isFavoriteAdd, setIsFavoriteAdd] = useState<boolean>(false);
+
+  const getEpisodiesInfo = async () => {
+    const listEpisodie = await getEpisodieInfo(character.episode);
+    if (listEpisodie instanceof Array) {
+      setEpisodeShow(listEpisodie);
+    }
+    setLogin(false);
+  };
+
+  useEffect(() => {
+    getEpisodiesInfo();
+  }, []);
+  const getFacorite = async () => {
+    const favoriteList = (await getfavorite()).split(',');
+    setIsFavoriteAdd(favoriteList.includes(JSON.stringify(character.id)));
+    console.log(favoriteList.includes(JSON.stringify(character.id)));
+  };
+  useEffect(() => {
+    getFacorite();
+  }, []);
+
+  const { characterInfo } = useLocalSearchParams<{
+    characterInfo: string;
+  }>();
+  const character: character = JSON.parse(characterInfo || '');
   return (
     <View style={styles.container}>
       <View
@@ -32,11 +73,11 @@ export default function characterInfo() {
           alignItems: 'center',
           marginVertical: 10,
         }}>
-        <Link
-          href={{ pathname: 'home' }}
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
           style={{ width: '10%', marginRight: 10 }}>
           <Ionicons name='chevron-back' size={30} color='#fff' />
-        </Link>
+        </TouchableOpacity>
         <View
           style={{
             flexDirection: 'row',
@@ -50,17 +91,29 @@ export default function characterInfo() {
               textAlign: 'center',
               textTransform: 'capitalize',
             }}>
-            {name}
+            {character?.name}
           </Text>
-          <TouchableOpacity>
-            <Ionicons name='star-outline' size={30} color='#fff' />
+          <TouchableOpacity
+            onPress={async () => {
+              if (isFavoriteAdd) {
+                await removefavorite(character.id);
+              } else {
+                await setfavorite(character.id);
+              }
+              setIsFavoriteAdd(!isFavoriteAdd);
+            }}>
+            <Ionicons
+              name={isFavoriteAdd ? 'star' : 'star-outline'}
+              size={30}
+              color='#fff'
+            />
           </TouchableOpacity>
         </View>
       </View>
 
       <ScrollView>
         <Image
-          source={image}
+          source={character.image}
           style={{
             marginVertical: 10,
             width: 200,
@@ -89,12 +142,14 @@ export default function characterInfo() {
             <View style={{ alignItems: 'center' }}>
               <Text style={{ fontSize: 20 }}>Species</Text>
               <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
-                {species}
+                {character.species}
               </Text>
             </View>
             <View style={{ alignItems: 'center' }}>
               <Text style={{ fontSize: 20 }}>Gender</Text>
-              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{gender}</Text>
+              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
+                {character.gender}
+              </Text>
             </View>
           </View>
           <View
@@ -107,28 +162,45 @@ export default function characterInfo() {
             <View style={{ alignItems: 'center' }}>
               <Text style={{ fontSize: 20 }}>Type</Text>
               <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
-                {type ? type : 'None'}
+                {character.type ? character.type : 'None'}
               </Text>
             </View>
             <View style={{ alignItems: 'center' }}>
               <Text style={{ fontSize: 20 }}>Status</Text>
-              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{status}</Text>
+              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
+                {character.status}
+              </Text>
             </View>
           </View>
         </View>
-        {episodeDevolver.map((episode) => (
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingVertical: 3,
-              justifyContent: 'space-between',
-            }}
-            key={episode.id}>
-            <Text style={{ fontSize: 16 }}>{episode.episode}</Text>
-            <Text style={{ fontSize: 16 }}>{episode.name}</Text>
-            <Text style={{ fontSize: 16 }}>{episode.air_date}</Text>
-          </View>
-        ))}
+        {!login ? (
+          episodeShow?.map((episode) => (
+            <View
+              style={{
+                marginVertical: 2,
+                padding: 5,
+                borderRadius: 5,
+                borderBlockColor: '#000',
+                borderWidth: 1,
+                flexDirection: 'row',
+                paddingVertical: 3,
+                justifyContent: 'space-between',
+                width: '100%',
+                alignItems: 'center',
+              }}
+              key={episode.id}>
+              <Text style={{ fontSize: 12, width: '30%' }}>
+                {episode.episode}
+              </Text>
+              <Text style={{ fontSize: 12, width: '30%' }}>{episode.name}</Text>
+              <Text style={{ fontSize: 12, width: '30%' }}>
+                {episode.air_date}
+              </Text>
+            </View>
+          ))
+        ) : (
+          <ActivityIndicator size='large' color='#aaa' />
+        )}
       </ScrollView>
     </View>
   );
