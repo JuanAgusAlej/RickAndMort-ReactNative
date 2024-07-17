@@ -23,6 +23,11 @@ interface returnApid  {
 } 
 
 
+export const getFavoriteApi = async (favoriteList:string): Promise<returnApid> =>{
+    console.log(favoriteList)
+    const {data} = await axios(`https://rickandmortyapi.com/api/character/${favoriteList}`)
+    return data
+}
 export const getCharacter = async (page:string, query: {
     name:string,
     status:string,
