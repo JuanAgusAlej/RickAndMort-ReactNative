@@ -1,22 +1,59 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigation } from 'expo-router';
 
 const InfoEpisodio = ({
   id,
   episode,
   name,
   air_date,
+  pathname,
+  listCharacter,
 }: {
   id: number;
   episode: string;
   name: string;
   air_date: string;
+  pathname: string;
+  listCharacter: string;
 }) => {
+  const [width, setWidth] = useState(0);
+  const navigation = useNavigation();
+
   return (
-    <View style={styles.conteiner} key={id}>
-      <Text style={styles.text}>{episode}</Text>
-      <Text style={styles.text}>{name}</Text>
-      <Text style={styles.text}>{air_date}</Text>
+    <View style={styles.conteiner}>
+      <Link
+        onLayout={(event) => {
+          const { width } = event.nativeEvent.layout;
+          setWidth(Math.round(width));
+        }}
+        onPress={() => navigation.navigate}
+        href={{
+          pathname,
+          params: {
+            episodioInfo: JSON.stringify({
+              id,
+              episode,
+              name,
+              air_date,
+              listCharacter,
+            }),
+          },
+        }}
+        key={id}>
+        {width !== 0 && (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              width,
+            }}>
+            <Text style={styles.text}>{episode}</Text>
+            <Text style={styles.text}>{name}</Text>
+            <Text style={styles.text}>{air_date}</Text>
+          </View>
+        )}
+      </Link>
     </View>
   );
 };
@@ -30,15 +67,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: '#fff',
     borderWidth: 1,
-    flexDirection: 'row',
     paddingVertical: 3,
-    justifyContent: 'space-between',
-    width: '100%',
-    alignItems: 'center',
   },
   text: {
     fontSize: 12,
-    width: '30%',
     color: '#fff',
   },
 });

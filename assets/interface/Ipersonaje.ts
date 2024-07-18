@@ -14,4 +14,5 @@ export interface IEpisodie {
     name: string;
     air_date: string;
     episode: string;
+    listCharacter:string;
   }
