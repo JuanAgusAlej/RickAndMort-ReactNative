@@ -6,12 +6,13 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getFavoriteApi } from '@/service/api';
 import { getfavorite } from '@/utils/asyncStorage';
 import CardPersonaje from '@/components/CardPersonaje/CardPersonaje';
 import { IPersonaje } from '@/assets/interface/Ipersonaje';
 import { useFocusEffect } from 'expo-router';
+import EmptyCharacter from '@/components/EmptyCharacter';
 
 export default function favorite() {
   const [loading, setLoading] = useState(true);
@@ -23,11 +24,16 @@ export default function favorite() {
   useFocusEffect(
     useCallback(() => {
       getFavotire();
+      return () => {
+        setCharacterInfo([]);
+        setLoading(true);
+      };
     }, [])
   );
+
   const getCharacters = async (listIdFavorite: string) => {
     const data = await getFavoriteApi(listIdFavorite);
-    console.log(data);
+
     setCharacterInfo(data);
     setLoading(false);
   };
@@ -44,10 +50,12 @@ export default function favorite() {
           marginBottom: 5,
           justifyContent: 'center',
         }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: 'center',
+        }}
         ListEmptyComponent={
-          <View>
-            <ActivityIndicator size='large' color='#aaa' />
-          </View>
+          !loading ? <EmptyCharacter text='No tenes favoritos' /> : <></>
         }
         renderItem={({ item }) => (
           <CardPersonaje
@@ -56,6 +64,15 @@ export default function favorite() {
             key={item.id}
           />
         )}
+        ListFooterComponent={
+          loading ? (
+            <View>
+              <ActivityIndicator size='large' color='#aaa' />
+            </View>
+          ) : (
+            <></>
+          )
+        }
       />
     </View>
   );
