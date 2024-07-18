@@ -75,6 +75,7 @@ interface test {
     name: string;
     air_date: string;
     episode: string;
+    listCharacter:string
   }
 
 export const getEpisodieInfo = async (episodies:Array<string>):Promise<Array<test> | string> =>{
@@ -82,11 +83,17 @@ try {
     const episodieList = [];
     for (let index = 0; index < episodies.length; index++) {
         const {data} = await axios(episodies[index]);
+        const idCharacter:Array<string> = data.characters.map((character:string) => {
+            const parts = character.split('/');
+            return parts[parts.length - 1];
+          });
+          
         const episodeObj={
             id:data.id,
             name:data.name,
             air_date:data.air_date,
             episode:data.episode,
+            listCharacter: idCharacter.join(',')
         }   
         episodieList.push(episodeObj);
     }

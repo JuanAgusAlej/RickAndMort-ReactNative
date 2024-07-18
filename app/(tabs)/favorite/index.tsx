@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { getFavoriteApi } from '@/service/api';
 import { getfavorite } from '@/utils/asyncStorage';
 import CardPersonaje from '@/components/CardPersonaje/CardPersonaje';
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    color: '#000',
+    color: '#fff',
     padding: 10,
     fontSize: 20,
     marginVertical: 10,

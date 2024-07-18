@@ -1,24 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Image } from 'expo-image';
-import {
-  Link,
-  useLocalSearchParams,
-  useNavigation,
-  usePathname,
-} from 'expo-router';
-import { useEffect, useState } from 'react';
-import { getEpisodieInfo } from '@/service/api';
-import { getfavorite, removefavorite, setfavorite } from '@/utils/asyncStorage';
-import { IEpisodie, IPersonaje } from '@/assets/interface/Ipersonaje';
+import { useLocalSearchParams } from 'expo-router';
+import { IPersonaje } from '@/assets/interface/Ipersonaje';
 import CharacterInfo from '@/components/CharacterInfo/CharacterInfo';
 
 export default function characterInfo() {

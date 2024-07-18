@@ -6,11 +6,13 @@ import { getEpisodieInfo } from '@/service/api';
 import CardInfo from './components/CardInfo';
 import Title from './components/Title';
 import InfoEpisodio from './components/InfoEpisodio';
+import { usePathname } from 'expo-router';
 
 const CharacterInfo = ({ character }: { character: IPersonaje }) => {
   const [episodeShow, setEpisodeShow] = useState<Array<IEpisodie>>([]);
-  const [login, setLogin] = useState(true);
+  const pathname = usePathname();
 
+  const [login, setLogin] = useState(true);
   const getEpisodiesInfo = async () => {
     const listEpisodie = await getEpisodieInfo(character.episode);
     if (listEpisodie instanceof Array) {
@@ -47,6 +49,8 @@ const CharacterInfo = ({ character }: { character: IPersonaje }) => {
               id={episode.id}
               name={episode.name}
               key={episode.id}
+              pathname={`${pathname.split('/')[1]}/episodie`}
+              listCharacter={episode.listCharacter}
             />
           ))
         ) : (

@@ -16,13 +16,11 @@ import EmptyCharacter from '@/components/EmptyCharacter';
 
 export default function HomeScreen() {
   const [text, setText] = useState('');
-  const [species, setSpecies] = useState('');
   const [isSpecies, setIsSpecies] = useState<boolean>(false);
   const [status, setStatus] = useState<'alive' | 'dead' | 'unknown' | ''>('');
   const [sendText, setSendText] = useState(false);
   const [page, setPage] = useState<number>(1);
   const [finsh, setFinsh] = useState<boolean>(false);
-  const [loading, setLoading] = useState(true);
   const [characterInfo, setCharacterInfo] = useState<
     Array<{
       id: number;
@@ -67,7 +65,6 @@ export default function HomeScreen() {
       setPage(1);
       setFinsh(true);
     }
-    setLoading(false);
     setSendText(false);
   };
 
