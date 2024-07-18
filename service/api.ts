@@ -9,65 +9,66 @@ interface returnApid  {
         prevPage: string | null,
     },
     result:[
-        {
-            id: number,
-            name: string,
-            status: string,
-            spicies: string,
-            type: string,
-            gender:string,
-            image:string,
-            episode:Array<String>
-        }
-    ]
+        result
+    ] | null
 } 
+interface result {
+    id: number,
+    name: string,
+    status: string,
+    spicies: string,
+    type: string,
+    gender:string,
+    image:string,
+    episode:Array<String>
+}
 
-
-export const getFavoriteApi = async (favoriteList:string): Promise<returnApid> =>{
-    console.log(favoriteList)
+export const getFavoriteApi = async (favoriteList:string): Promise<Array<result>> =>{
     const {data} = await axios(`https://rickandmortyapi.com/api/character/${favoriteList}`)
+    if(data.id){
+        const returnArry = [];
+        returnArry.push(data)
+        return returnArry;
+    }
     return data
 }
-export const getCharacter = async (page:number, status:'alive' | 'dead' | 'unknown' | ''
+export const getCharacter = async (page:number, status:'alive' | 'dead' | 'unknown' | '', text: string, isSpecies:boolean
 ): Promise<returnApid> =>{
-    console.log('Dentro de api')
-    console.log(page)
-    console.log('Dentro de stado')
-    console.log(status)
-    const characterRespond = await axios(`https://rickandmortyapi.com/api/character?page=${page}&status=${status}`)
-    const returnHaracter = 
-        {
-            status: characterRespond.status,
-            info:{
-                count: characterRespond.data.info.count,
-                pagesTotal: characterRespond.data.info.pages,
-                nextPage: characterRespond.data.info.next,
-                prevPage: characterRespond.data.info.prev,
-                
-            },
-            result:characterRespond.data.results
-        }        
-    return returnHaracter
+
+    try {
+        
+        const characterRespond = await axios(`https://rickandmortyapi.com/api/character?page=${page}&status=${status}&${ isSpecies ? `species=${text}`:`name=${text}`}`)
+        const returnHaracter = 
+            {
+                status: characterRespond.status,
+                info:{
+                    count: characterRespond.data.info.count,
+                    pagesTotal: characterRespond.data.info.pages,
+                    nextPage: characterRespond.data.info.next,
+                    prevPage: characterRespond.data.info.prev,
+                    
+                },
+                result:characterRespond.data.results
+            }        
+        return returnHaracter
+    } catch (error) {
+        const returnHaracter = 
+            {
+                status: error.response.status,
+                info:{
+                    count: 0,
+                    pagesTotal: 0,
+                    nextPage: null,
+                    prevPage: null,
+                    
+                },
+                result:null
+            }        
+        return returnHaracter
+
+    }
 }
-export const getFilterCharacter = async (text:string,  status:'alive' | 'dead' | 'unknown' | '' ,page?:number): Promise<returnApid> =>{
-    console.log('Dentro de api')
-    console.log(page)
-    console.log('Dentro de text')
-    const characterRespond = await axios(`https://rickandmortyapi.com/api/character?name=${text}&page=${page}&status=${status}`)
-    const returnHaracter = 
-        {
-            status: characterRespond.status,
-            info:{
-                count: characterRespond.data.info.count,
-                pagesTotal: characterRespond.data.info.pages,
-                nextPage: characterRespond.data.info.next,
-                prevPage: characterRespond.data.info.prev,
-                
-            },
-            result:characterRespond.data.results
-        }        
-    return returnHaracter
-}
+
 
 interface test {
     id: number;

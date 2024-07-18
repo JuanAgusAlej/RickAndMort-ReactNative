@@ -6,16 +6,18 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Text,
+  Switch,
 } from 'react-native';
 
 import { useEffect, useState } from 'react';
-import { getCharacter, getFilterCharacter } from '@/service/api';
+import { getCharacter } from '@/service/api';
 import CardPersonaje from '@/components/CardPersonaje/CardPersonaje';
-import { IReturnApid } from '@/assets/interface/returnApi';
-import { Ionicons } from '@expo/vector-icons';
+import EmptyCharacter from '@/components/EmptyCharacter';
 
 export default function HomeScreen() {
   const [text, setText] = useState('');
+  const [species, setSpecies] = useState('');
+  const [isSpecies, setIsSpecies] = useState<boolean>(false);
   const [status, setStatus] = useState<'alive' | 'dead' | 'unknown' | ''>('');
   const [sendText, setSendText] = useState(false);
   const [page, setPage] = useState<number>(1);
@@ -35,14 +37,9 @@ export default function HomeScreen() {
   >([]);
 
   const getCharacters = async () => {
-    const characters =
-      text === ''
-        ? await getCharacter(page, status)
-        : await getFilterCharacter(text, status, page);
+    const characters = await getCharacter(page, status, text, isSpecies);
     if (characters.status === 200) {
       if (page === 1) {
-        console.log('2222222222222222222222222222222222222222222222222222');
-        console.log(characters.result);
         setCharacterInfo(characters.result);
         const firstList =
           characters.info.nextPage !== null
@@ -60,31 +57,32 @@ export default function HomeScreen() {
         if (characters.info.nextPage !== null) {
           const count = page + 1;
           setPage(count);
+          setFinsh(false);
         } else {
           setFinsh(true);
         }
       }
-      setLoading(false);
-      setSendText(false);
+    } else {
+      setCharacterInfo([]);
+      setPage(1);
+      setFinsh(true);
     }
+    setLoading(false);
+    setSendText(false);
   };
 
   useEffect(() => {
     getCharacters();
-  }, [sendText]);
-  useEffect(() => {
-    console.log('ffffffffffffffffff');
-    getCharacters();
-  }, [status]);
+  }, [sendText, status, isSpecies]);
+
   return (
     <View style={styles.container}>
       <TextInput
         style={styles.textInput}
-        placeholder='Nombre del personaje'
+        placeholder='Buscar por nombre'
         onPress={() => setSendText(false)}
         onChangeText={(newText) => {
           setPage(1);
-          console.log('ssssssssss');
           setText(newText);
         }}
         onBlur={() => {
@@ -92,6 +90,20 @@ export default function HomeScreen() {
         }}
         defaultValue={text}
       />
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginHorizontal: '5%',
+        }}>
+        <Text style={{ color: '#fff' }}>Buscar por Especie</Text>
+        <Switch
+          trackColor={{ false: '#767577', true: '#81b0ff' }}
+          ios_backgroundColor='#3e3e3e'
+          onValueChange={() => setIsSpecies((previousState) => !previousState)}
+          value={isSpecies}
+        />
+      </View>
       <Text style={{ textAlign: 'center', color: '#fff', fontSize: 16 }}>
         Filtro de como se encuentra
       </Text>
@@ -164,6 +176,13 @@ export default function HomeScreen() {
           marginBottom: 5,
           justifyContent: 'center',
         }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: 'center',
+        }}
+        ListEmptyComponent={
+          finsh ? <EmptyCharacter text='No se encontro personaje' /> : <></>
+        }
         renderItem={({ item }) => (
           <CardPersonaje
             item={item}
