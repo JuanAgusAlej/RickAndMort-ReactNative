@@ -28,21 +28,32 @@ export const getFavoriteApi = async (favoriteList:string): Promise<returnApid> =
     const {data} = await axios(`https://rickandmortyapi.com/api/character/${favoriteList}`)
     return data
 }
-export const getCharacter = async (page:string, query: {
-    name:string,
-    status:string,
-    species:string,
-    type:string,
-    gender:string
-}): Promise<returnApid> =>{
-    console.log(query.name)
+export const getCharacter = async (page:number, status:'alive' | 'dead' | 'unknown' | ''
+): Promise<returnApid> =>{
+    console.log('Dentro de api')
     console.log(page)
-    const characterRespond = await axios(`${ page !==""  ? page : `https://rickandmortyapi.com/api/character?page=1
-        &name${query.name}
-        &status${query.status}
-        &species${query.species}
-        &type${query.type}
-        &gender${query.gender}`}`)
+    console.log('Dentro de stado')
+    console.log(status)
+    const characterRespond = await axios(`https://rickandmortyapi.com/api/character?page=${page}&status=${status}`)
+    const returnHaracter = 
+        {
+            status: characterRespond.status,
+            info:{
+                count: characterRespond.data.info.count,
+                pagesTotal: characterRespond.data.info.pages,
+                nextPage: characterRespond.data.info.next,
+                prevPage: characterRespond.data.info.prev,
+                
+            },
+            result:characterRespond.data.results
+        }        
+    return returnHaracter
+}
+export const getFilterCharacter = async (text:string,  status:'alive' | 'dead' | 'unknown' | '' ,page?:number): Promise<returnApid> =>{
+    console.log('Dentro de api')
+    console.log(page)
+    console.log('Dentro de text')
+    const characterRespond = await axios(`https://rickandmortyapi.com/api/character?name=${text}&page=${page}&status=${status}`)
     const returnHaracter = 
         {
             status: characterRespond.status,

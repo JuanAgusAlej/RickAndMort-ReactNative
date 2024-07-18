@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     minHeight: 'auto',
   },
   text: {
-    fontSize: 12,
+    fontSize: 11,
     width: 90,
   },
 });

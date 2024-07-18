@@ -1,10 +1,4 @@
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { IEpisodie, IPersonaje } from '@/assets/interface/Ipersonaje';
 import { Image } from 'expo-image';
