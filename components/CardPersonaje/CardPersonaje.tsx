@@ -24,12 +24,18 @@ const CardPersonaje = ({
       style={{ width: '30%' }}
       key={item.id}>
       <View style={conteniner}>
-        <Text style={titel}>{item.name}</Text>
+        <Text style={titel} numberOfLines={1}>
+          {item.name}
+        </Text>
 
         <Image source={item.image} contentFit='contain' style={image} />
         <View style={{ alignContent: 'flex-start' }}>
-          <Text style={text}>Species: {item.species}</Text>
-          <Text style={text}>Status: {item.status}</Text>
+          <Text style={text} numberOfLines={1}>
+            Species: {item.species}
+          </Text>
+          <Text style={text} numberOfLines={1}>
+            Status: {item.status}
+          </Text>
         </View>
       </View>
     </Link>
@@ -42,6 +48,7 @@ const styles = StyleSheet.create({
   conteniner: {
     backgroundColor: '#9dded3',
     width: '100%',
+    height: 200,
     borderRadius: 10,
     padding: 15,
   },
@@ -57,10 +64,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     width: 90,
-    minHeight: 'auto',
   },
   text: {
     fontSize: 11,
     width: 90,
+    flexShrink: 1,
+    marginBottom: 4,
   },
 });
