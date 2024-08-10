@@ -44,13 +44,16 @@ const InfoEpisodio = ({
         {width !== 0 && (
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
               width,
+              flexDirection: 'row',
             }}>
             <Text style={styles.text}>{episode}</Text>
-            <Text style={styles.text}>{name}</Text>
-            <Text style={styles.text}>{air_date}</Text>
+            <Text style={styles.text} numberOfLines={1}>
+              {name}
+            </Text>
+            <Text style={[styles.text, { textAlign: 'right' }]}>
+              {air_date}
+            </Text>
           </View>
         )}
       </Link>
@@ -72,5 +75,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 12,
     color: '#fff',
+    width: '33%',
   },
 });

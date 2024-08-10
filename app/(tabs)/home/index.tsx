@@ -101,9 +101,6 @@ export default function HomeScreen() {
           value={isSpecies}
         />
       </View>
-      <Text style={{ textAlign: 'center', color: '#fff', fontSize: 16 }}>
-        Filtro de como se encuentra
-      </Text>
       <View
         style={{
           width: '100%',
